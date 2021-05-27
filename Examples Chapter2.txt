@@ -1,0 +1,51 @@
+En la terminal nos situamos en la ruta de Spark en su carpeta bin.
+
+Inicializamos Spark con scala: spark-shell
+
+Comprobamos cual es la versión que tenemos: spark.version
+
+Vamos a leer un archivo de texto como Dataframe:
+	val strings = spark.read.text("../README.md")
+	strings.show(10,false)
+	strings.count 
+
+Ctrl - D para salir de la shell
+---------------------------------------
+Realizamos el mismo ejemplo con python:
+
+Inicializamos Spark con python: pyspark
+
+Leemos el archivo de texto como Dataframe:
+	strings = spark.read.text("../README.md")
+	strings.show(10,f truncate=False)
+	strings.count ()
+
+-----------------------------------------------------------------------------
+OPERACIONES EN SPARK:ACCIONES, TRANSFORMACIONES Y LAZY EVALUATION
+*Transformaciones: transforman un dataframe de spark en uno nuevo sin alterar los datos origiales. Por ejemplo, 
+una transformación se lleva a cabo a través de un filter()  o un select().
+Las transformaciones no son computadas inmediatamente. La lazy evaluation hace que una transformación no sea computada
+hasta que se realice una acción sobre esta.
+*Acciones: son operaciones u funciones que se llevan a cabo sobre una transformacion. Ejemplos de acciones pueden ser 
+un count(), show(), take(), etc.
+
+---------------------------------------
+Ejemplo en Scala:
+spark-shell #inicializamos el shell
+val strings = spark.read.text("../README.md") #leemos el documento
+val filtered = strings.filter(col("value").contains("Spark")) #transformación
+filtered.count() #accion
+---------------------------------------
+Ejemplo en Python:
+strings = spark.read.text("../README.md") #leemos el documento
+filtered = strings.filter(strings.value.contains("Spark")) #transformacion
+filtered.count() #accion
+
+-----------------------------------------------------------------------------
+DEPENCENCIAS NARROW Y WIDE
+*Narrow: cada particion padre es utilizada, como mucho, por una particion hijo. Por ejemplo, filter() o contains()
+son transformaciones narrow porque pueden operar en una sola particion y devolver una particion output sin cambiar
+nada de los datos.
+*Wide: cada particion padre es utilizada por muchas particiones hijo. Por ejemplo, groupBy() y orderBy() utilizan particiones
+para leerlas, combinarlas y escribirlas en el disco.
+
